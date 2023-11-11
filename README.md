@@ -1,7 +1,5 @@
-# Awesome Project Build with TypeORM
+# Drivers and Cars service for Sibenco project
 
-Steps to run this project:
-
-1. Run `npm i` command
-2. Setup database settings inside `data-source.ts` file
-3. Run `npm start` command
+Документация для работы с основным сервисом:
+1. Отправить запрос по адресу /vangers/free_drivers_and_cars для поиска подходящих водителей и машин
+2. Отправить запрос на создание вангера

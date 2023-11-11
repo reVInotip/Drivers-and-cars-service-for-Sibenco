@@ -1,16 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
-/*type ECarType = {
-    title: string,
-    loadCapacity: number,
-    numberOfPassengersInCar: number,
-    amountOfCargoInCar: number
-}*/
+type CarStatusType = "Busy" | "Ready"
 
 @Entity()
 export default class Car {
     @PrimaryGeneratedColumn("uuid")
-    id: number
+    id: string
 
     @Column()
     numberOfTransport: number
@@ -26,4 +21,11 @@ export default class Car {
 
     @Column()
     amountOfCargoInCar: number
+
+    @Column({
+        type: "enum",
+        enum: ["Busy", "Ready"],
+        default: "Ready"
+    })
+    status: CarStatusType
 }

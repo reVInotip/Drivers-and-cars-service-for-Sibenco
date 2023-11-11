@@ -11,7 +11,7 @@ const errors: TErrors = {
     Create: 'cant create ',
     Update: 'cant update ',
     Delete: 'cant delete ',
-    NotFound: 'not found',
+    NotFound: 'not found ',
 };
   
 export default errors;

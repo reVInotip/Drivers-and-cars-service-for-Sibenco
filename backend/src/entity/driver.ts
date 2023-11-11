@@ -8,10 +8,18 @@ F - ждёт работы
 B - занят
 */
 
+export type TDriver = {
+    id: string,
+    status: DriverStatusType,
+    firstName: string,
+    lastName: string,
+    category: string
+}
+
 @Entity()
 export default class Driver {
     @PrimaryGeneratedColumn("uuid")
-    id: number
+    id: string
 
     @Column({
         type: "enum",
@@ -29,11 +37,6 @@ export default class Driver {
     @Column()
     category: string
 
-    @Column({
-        type: "enum",
-        enum: ["H", "S", "F", "B"],
-        default: "F"
-    })
-    timetable: DriverStatusType[]
-
+    @Column("simple-array")
+    timetable: DriverStatusType[366]
 }

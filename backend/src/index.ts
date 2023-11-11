@@ -5,27 +5,37 @@ import http from 'http';
 
 import { AppDataSource } from "./data-source";
 import { config, LoadConfig } from './config';
+import carRouter from './routes/car.router';
+import driverRouter from './routes/driver.router';
+import vangerRouter from './routes/vanger.router';
 LoadConfig()
 
 
 AppDataSource.initialize().then(async () => {
-    const app = express();
-    app.use(cors())
+    console.log("Data Source has been initialized!")
+}).catch(error => {
+    console.error("Error during Data Source initialization:", error)
+})
 
-    app.use(morgan("dev"))
-    app.use(express.json());
-    app.use(express.urlencoded({extended: true}));
+const app = express();
+app.use(cors())
 
-    // routes
+app.use(morgan("dev"))
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
-    app.set('port', config.port)
+// routes
+app.use('/cars', carRouter);
+app.use('/drivers', driverRouter);
+app.use('/vangers', vangerRouter);
 
-    const server = http.createServer(app);
-    server.on('listening', onListening);
-    server.listen(config.port);
+app.set('port', config.port)
 
-    function onListening() {
-        const addr = server.address();
-        console.log('Listening on ', addr);
-    }
-}).catch(error => console.log(error))
+const server = http.createServer(app);
+server.on('listening', onListening);
+server.listen(config.port);
+
+function onListening() {
+    const addr = server.address();
+    console.log('Listening on ', addr);
+}
