@@ -3,7 +3,7 @@ import Car from './car';
 import Driver from "./driver";
 
 //rename
-export type TVangerType = {
+export type TOrderSpecificationType = {
     maxNumberOfPassengers: number,
     maxAmountOfCargo: number,
     numberOfPassengers: number,

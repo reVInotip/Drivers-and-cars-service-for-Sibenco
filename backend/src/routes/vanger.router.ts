@@ -8,6 +8,7 @@ router.get('/all', vangerController.GetAllVangers);
 router.delete('/:id', vangerController.DeleteVanger);
 router.patch('/:id', vangerController.PatchVanger);
 router.get('/:id', vangerController.GetVangerById);
-router.get('/', vangerController.GetVangersSuitableVangersForOrder);
+router.get('/suitable/items', vangerController.GetSuitableDriversAndCarsForOrder);
+router.get('/suitable/vangers', vangerController.GetSuitableVangersForOrder);
 
-export default router;
+export default router

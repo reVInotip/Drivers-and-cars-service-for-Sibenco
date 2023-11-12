@@ -1,4 +1,4 @@
-import Vanger, { TVangerType } from "../entity/vanger";
+import Vanger, { TOrderSpecificationType } from "../entity/vanger";
 import { AppDataSource } from "../data-source";
 import { config } from "../config";
 import { LessThan, MoreThanOrEqual } from "typeorm";
@@ -6,6 +6,7 @@ import { PatchCar } from "./car.service";
 import { PatchDriver } from "./driver.service";
 import Car from "../entity/car";
 import Driver from "../entity/driver";
+import DaysInMonth from "../utils/daysInMonth";
 
 export async function CreateVanger(data: Vanger) {
     let vanger = await AppDataSource.getRepository(Vanger).create(data);
@@ -15,6 +16,8 @@ export async function CreateVanger(data: Vanger) {
     vanger.driver.status = "B";
     await PatchCar(vanger.car.id, vanger.car);
     await PatchDriver(vanger.driver.id, vanger.driver);
+
+    return vanger;
 }
 
 export async function GetAllVangers(page: number, pageSize: number) {
@@ -23,7 +26,7 @@ export async function GetAllVangers(page: number, pageSize: number) {
         skip: page * pageSize,
     });
 
-    if (!vangers) {
+    if (!vangers.length) {
         throw new Error(config.errors.NotFound + 'vangers');
     }
     return vangers;
@@ -53,17 +56,11 @@ export async function GetVangerById(id: string) {
     return await AppDataSource.getRepository(Vanger).findOneBy({id: id});
 }
 
-function DaysInMonth(year: number, month: number): number {
-    const date1 = new Date(year, month, 1);
-    const date2 = new Date(year, month + 1, 1);
-    return Math.round((date2.getTime() - date1.getTime()) / 1000 / 3600 / 24);
-}
-
-export async function GetVangersSuitableVangersForOrder(vanger: TVangerType) {
+export async function GetSuitableDriversAndCarsForOrder(order: TOrderSpecificationType) {
     let carsForOrder = await AppDataSource.getRepository(Car).findBy({
-        loadCapacity: MoreThanOrEqual(vanger.maxAmountOfCargo + vanger.maxNumberOfPassengers),
-        numberOfPassengersInCar: LessThan(vanger.maxNumberOfPassengers - vanger.numberOfPassengers),
-        amountOfCargoInCar: LessThan(vanger.maxAmountOfCargo - vanger.amountOfCargo),
+        loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
+        numberOfPassengersInCar: LessThan(order.maxNumberOfPassengers - order.numberOfPassengers),
+        amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
         status: "Ready"
     });
 
@@ -91,4 +88,21 @@ export async function GetVangersSuitableVangersForOrder(vanger: TVangerType) {
     }
 
     return {car: carsForOrder, driver: driversForOrder};
+}
+
+
+export async function GetSuitableVangersForOrder(order: TOrderSpecificationType) {
+    const vangersForOrder = await AppDataSource.getRepository(Vanger).findBy({
+        car: {
+            loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
+            numberOfPassengersInCar: LessThan(order.maxNumberOfPassengers - order.numberOfPassengers),
+            amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
+        }
+    })
+
+    if (!vangersForOrder.length) {
+        throw new Error(config.errors.NotFound + 'vangers');
+    }
+
+    return vangersForOrder;
 }
