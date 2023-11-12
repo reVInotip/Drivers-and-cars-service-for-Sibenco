@@ -60,7 +60,7 @@ export async function GetSuitableDriversAndCarsForOrder(order: TOrderSpecificati
     let carsForOrder = await AppDataSource.getRepository(Car).findBy({
         loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
         numberOfPassengersInCar: LessThan(order.maxNumberOfPassengers - order.numberOfPassengers),
-        //amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
+        amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
         status: "Ready"
     });
 
@@ -96,7 +96,7 @@ export async function GetSuitableVangersForOrder(order: TOrderSpecificationType)
         car: {
             loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
             numberOfPassengersInCar: LessThan(order.maxNumberOfPassengers - order.numberOfPassengers),
-            //amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
+            amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
         }
     })
 
