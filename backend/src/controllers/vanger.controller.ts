@@ -5,8 +5,7 @@ import * as vangerService from "../service/vanger.service";
 
 export const CreateVanger = SampleController(
     async (req: Request) => {
-        vangerService.CreateVanger(req.body)
-        return {code: 200, body: config.messages.successCreate};
+        return {code: 200, body: await vangerService.CreateVanger(req.body)};
     }
 );
 
@@ -64,8 +63,14 @@ export const GetVangerById = SampleController(
     }
 )
 
-export const GetVangersSuitableVangersForOrder = SampleController(
+export const GetSuitableDriversAndCarsForOrder = SampleController(
     async(req: Request) => {
-        return {code: 200, body: await vangerService.GetVangersSuitableVangersForOrder(req.body)};
+        return {code: 200, body: await vangerService.GetSuitableDriversAndCarsForOrder(req.body)};
+    }
+)
+
+export const GetSuitableVangersForOrder = SampleController(
+    async(req: Request) => {
+        return {code: 200, body: await vangerService.GetSuitableVangersForOrder(req.body)};
     }
 )
