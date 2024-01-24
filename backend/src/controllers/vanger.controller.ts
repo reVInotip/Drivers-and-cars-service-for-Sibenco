@@ -62,15 +62,3 @@ export const GetVangerById = SampleController(
         return {code: 200, body: result};
     }
 )
-
-export const GetSuitableDriversAndCarsForOrder = SampleController(
-    async(req: Request) => {
-        return {code: 200, body: await vangerService.GetSuitableDriversAndCarsForOrder(req.body)};
-    }
-)
-
-export const GetSuitableVangersForOrder = SampleController(
-    async(req: Request) => {
-        return {code: 200, body: await vangerService.GetSuitableVangersForOrder(req.body)};
-    }
-)

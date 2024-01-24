@@ -7,7 +7,10 @@ export type TOrderSpecificationType = {
     maxNumberOfPassengers: number,
     maxAmountOfCargo: number,
     numberOfPassengers: number,
-    amountOfCargo: number
+    amountOfCargo: number,
+    beginDate: number, //unixtime
+    endDate: number, //unixtime
+    location: string
 }
 
 @Entity()

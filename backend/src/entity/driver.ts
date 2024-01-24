@@ -21,13 +21,6 @@ export default class Driver {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({
-        type: "enum",
-        enum: ["H", "S", "F", "B"],
-        default: "F"
-    })
-    status: DriverStatusType
-
     @Column()
     firstName: string
 
@@ -36,6 +29,9 @@ export default class Driver {
 
     @Column()
     category: string
+
+    @Column()
+    location: string
 
     @Column("simple-array")
     timetable: DriverStatusType[366]

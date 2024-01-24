@@ -1,6 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
-type CarStatusType = "Busy" | "Ready"
+type CarStatusType = "B" | "Ready"
+/**
+ * B - занят
+ * F - ждёт работы
+ * C - сломана
+ */
 
 @Entity()
 export default class Car {
@@ -16,16 +21,15 @@ export default class Car {
     @Column()
     loadCapacity: number
 
-    @Column()
+    @Column('number', {default: 0})
     numberOfPassengersInCar: number
 
-    @Column()
+    @Column('number', {default: 0})
     amountOfCargoInCar: number
 
-    @Column({
-        type: "enum",
-        enum: ["Busy", "Ready"],
-        default: "Ready"
-    })
-    status: CarStatusType
+    @Column()
+    location: string
+
+    @Column('simple-array')
+    timetable: CarStatusType[366]
 }
