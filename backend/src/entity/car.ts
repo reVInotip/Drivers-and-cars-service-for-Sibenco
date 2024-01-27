@@ -21,15 +21,15 @@ export default class Car {
     @Column()
     loadCapacity: number
 
-    @Column('number', {default: 0})
+    @Column('int', {default: 0})
     numberOfPassengersInCar: number
 
-    @Column('number', {default: 0})
+    @Column('float', {default: 0})
     amountOfCargoInCar: number
 
-    @Column()
+    @Column('text', {default: 'New-York'})
     location: string
 
-    @Column('simple-array')
+    @Column('simple-array', {default: 'F'})
     timetable: CarStatusType[366]
 }

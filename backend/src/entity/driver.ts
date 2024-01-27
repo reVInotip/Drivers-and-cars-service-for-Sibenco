@@ -30,7 +30,7 @@ export default class Driver {
     @Column()
     category: string
 
-    @Column()
+    @Column('text', {default: 'New-York'})
     location: string
 
     @Column("simple-array")
