@@ -33,7 +33,17 @@ export async function GetDriverById(id: string) {
     return await AppDataSource.getRepository(Driver).findOneBy({id: id});
 }
 
-export async function GetDriversByParams(data: TDriver) {
-    return await AppDataSource.getRepository(Driver).findBy(data);
+// TO-DO безопасно ли?
+export async function GetDriversByParams(data: TDriver, page: number, pageSize: number) {
+    return await AppDataSource.getRepository(Driver).find({
+        where: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            category: data.category,
+            location: data.location
+        },
+        take: pageSize,
+        skip: page * pageSize
+    });
 }
 

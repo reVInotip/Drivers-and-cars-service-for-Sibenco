@@ -1,38 +1,28 @@
-import Vanger, { TOrderSpecificationType } from "../entity/vanger";
+import Vanger, { RequestOrderSpecificationType, RequestRouteSpecificationType, RequestVanger } from "../entity/vanger";
 import { AppDataSource } from "../data-source";
 import { config } from "../config";
 import { PatchCar } from "./car.service";
 import { PatchDriver } from "./driver.service";
-import GetSuitableDriverAndCarForOrder from "../utils/getSuitableDriverAndCarForOrder";
-import TodayDateInDays from "../utils/todayDateInDays";
+import { GetSuitableDriversAndCarsForOrder, GetSuitableDriversAndCarsForRoute } from "../utils/getSuitableDriverAndCarForOrder";
+import UnixtimeToDays from "../utils/unixtimeToDays";
 
-export async function CreateVanger(order: TOrderSpecificationType) {
-    const secondsInDay: number = 86400;
-    let timeBegin: number;
-    if (order.beginDate) {
-        timeBegin = Math.ceil(order.beginDate / secondsInDay);
-    } else {
-        timeBegin = TodayDateInDays();
-    }
-    const timeEnd: number = Math.ceil(order.endDate / secondsInDay);
+export async function CreateVanger(data: RequestVanger) {
+    const timeInDays = UnixtimeToDays(data.beginDate, data.endDate);
 
-    let vanger: Vanger = <Vanger>await GetSuitableDriverAndCarForOrder(order, timeBegin, timeEnd);
-
-    let carTimetable = Array.from(vanger.car.timetable);
-    let driverTimetable = Array.from(vanger.driver.timetable);
-    for (let i: number = timeBegin - 1; i < timeEnd; ++i) {
+    let carTimetable = Array.from(data.vanger.car.timetable);
+    let driverTimetable = Array.from(data.vanger.driver.timetable);
+    for (let i: number = timeInDays.begin - 1; i < timeInDays.end; ++i) {
         carTimetable[i] = 'B';
         driverTimetable[i] = 'B';
     }
-    vanger.car.timetable = carTimetable.join('');
-    vanger.driver.timetable = driverTimetable.join('');
+    data.vanger.car.timetable = carTimetable.join('');
+    data.vanger.driver.timetable = driverTimetable.join('');
 
-    await PatchCar(vanger.car.id, vanger.car);
-    await PatchDriver(vanger.driver.id, vanger.driver);
+    await PatchCar(data.vanger.car.id, data.vanger.car);
+    await PatchDriver(data.vanger.driver.id, data.vanger.driver);
 
-    await AppDataSource.getRepository(Vanger).save(vanger);
-
-    return vanger;
+    const driver = await AppDataSource.getRepository(Vanger).create(data.vanger);
+    await AppDataSource.getRepository(Vanger).save(driver);
 }
 
 export async function GetAllVangers(page: number, pageSize: number) {
@@ -47,6 +37,31 @@ export async function GetAllVangers(page: number, pageSize: number) {
     return vangers;
 }
 
+export async function GetSuitableVangerByTitle(order: RequestOrderSpecificationType) {
+    const timeInDays = UnixtimeToDays(order.beginDate, order.endDate);
+
+    let vanger: Vanger = <Vanger>await GetSuitableDriversAndCarsForOrder(order, timeInDays.begin, timeInDays.end, true);
+    let ReqVanger: RequestVanger = {
+        vanger: vanger,
+        beginDate: order.beginDate,
+        endDate: order.endDate
+    }
+
+    await CreateVanger(ReqVanger);
+
+    return vanger;
+}
+
+export async function GetSuitableDriversAndCars(order: RequestOrderSpecificationType, page: number, pageSize: number) {
+    const timeInDays = UnixtimeToDays(order.beginDate, order.endDate);
+
+    let carsAndDrivers = await GetSuitableDriversAndCarsForOrder(order, timeInDays.begin, timeInDays.end, false);
+    return {
+        cars: carsAndDrivers.cars.slice(page * pageSize - 1, page * pageSize + pageSize),
+        drivers: carsAndDrivers.drivers.slice(page * pageSize - 1, page * pageSize + pageSize)
+    };
+}
+
 export async function DeleteVanger(id: string) {
     let vanger = await GetVangerById(id);
     if (!vanger) {
@@ -57,6 +72,9 @@ export async function DeleteVanger(id: string) {
     return result.affected;
 }
 
+/**
+ * TO-DO: Что делать, если водитель заболел? Как быть с изменением маршрута при мёрдже?
+ */
 export async function PatchVanger(id:string, data: Vanger) {
     const result = await AppDataSource.getRepository(Vanger).update(id, data);
     return result.affected;

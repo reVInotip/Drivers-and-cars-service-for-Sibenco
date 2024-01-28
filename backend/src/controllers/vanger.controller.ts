@@ -21,6 +21,24 @@ export const GetAllVangers = SampleController(
       }
 )
 
+export const GetSuitableVangerByTitle = SampleController(
+    async (req: Request) => {
+        return {code: 200, body: await vangerService.GetSuitableVangerByTitle(req.body)};
+    }
+)
+
+export const GetSuitableDriversAndCars = SampleController(
+    async (req: Request) => {
+        const page: number =
+          typeof req.query.page == 'string' ? Number(req.query.page) : 0;
+        const pageSize: number =
+          typeof req.query.page_size == 'string'
+            ? Number(req.query.page_size)
+            : config.PAGE_SIZE;
+        return {code: 200, body: await vangerService.GetSuitableDriversAndCars(req.body, page, pageSize)};
+    }
+)
+
 export const DeleteVanger = SampleController(
     async(req: Request) => {
         if(!req.params.id) {
@@ -48,6 +66,7 @@ export const PatchVanger = SampleController(
         return {code: 200, body: config.messages.successUpdate};
     }
 )
+
 
 export const GetVangerById = SampleController(
     async(req: Request) => {

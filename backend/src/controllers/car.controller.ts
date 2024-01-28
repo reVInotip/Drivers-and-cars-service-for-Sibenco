@@ -66,6 +66,12 @@ export const GetCarById = SampleController(
 
 export const GetCarsByParams = SampleController(
     async(req: Request) => {
-        return {code: 200, body: await carService.GetCarsByParams(req.body)};
+        const page: number =
+          typeof req.query.page == 'string' ? Number(req.query.page) : 0;
+        const pageSize: number =
+          typeof req.query.page_size == 'string'
+            ? Number(req.query.page_size)
+            : config.PAGE_SIZE;
+        return {code: 200, body: await carService.GetCarsByParams(req.body, page, pageSize)};
     }
 )

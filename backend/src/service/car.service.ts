@@ -1,4 +1,4 @@
-import Car from "../entity/car";
+import Car, { TCar } from "../entity/car";
 import { AppDataSource } from "../data-source";
 import { config } from "../config";
 
@@ -33,6 +33,17 @@ export async function GetCarById(id: string) {
     return await AppDataSource.getRepository(Car).findOneBy({id: id});
 }
 
-export async function GetCarsByParams(data: Car) {
-    return await AppDataSource.getRepository(Car).findBy(data);
+export async function GetCarsByParams(data: TCar, page: number, pageSize: number) {
+    return await AppDataSource.getRepository(Car).find({
+        where: {
+            numberOfTransport: data.numberOfTransport,
+            title: data.title,
+            loadCapacity: data.loadCapacity,
+            numberOfPassengersInCar: data.numberOfPassengersInCar,
+            amountOfCargoInCar: data.amountOfCargoInCar,
+            location: data.location
+        },
+        take: pageSize,
+        skip: page * pageSize,
+    });
 }
