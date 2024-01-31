@@ -50,6 +50,20 @@ export const PatchCar = SampleController(
     }
 )
 
+export const PatchCarTimetable = SampleController(
+    async(req: Request) => {
+        if(!req.params.id) {
+            return {code: 400, body: config.errors.BadId};
+        }
+
+        const result = await carService.PatchCarTimetable(req.params.id, req.body);
+        if (!result) {
+            return {code: 400, body: config.errors.BadId};
+        }
+        return {code: 200, body: config.messages.successUpdate};
+    }
+)
+
 export const GetCarById = SampleController(
     async(req: Request) => {
         if(!req.params.id) {
@@ -66,6 +80,12 @@ export const GetCarById = SampleController(
 
 export const GetCarsByParams = SampleController(
     async(req: Request) => {
-        return {code: 200, body: await carService.GetCarsByParams(req.body)};
+        const page: number =
+          typeof req.query.page == 'string' ? Number(req.query.page) : 0;
+        const pageSize: number =
+          typeof req.query.page_size == 'string'
+            ? Number(req.query.page_size)
+            : config.PAGE_SIZE;
+        return {code: 200, body: await carService.GetCarsByParams(req.body, page, pageSize)};
     }
 )

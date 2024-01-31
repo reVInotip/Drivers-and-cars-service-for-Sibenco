@@ -8,6 +8,7 @@ import { config, LoadConfig } from './config';
 import carRouter from './routes/car.router';
 import driverRouter from './routes/driver.router';
 import vangerRouter from './routes/vanger.router';
+import swaggerDocs from './utils/swagger';
 LoadConfig()
 
 
@@ -28,6 +29,9 @@ app.use(express.urlencoded({extended: true}));
 app.use('/cars', carRouter);
 app.use('/drivers', driverRouter);
 app.use('/vangers', vangerRouter);
+
+//Swagger
+swaggerDocs(app, config.port);
 
 app.set('port', config.port)
 

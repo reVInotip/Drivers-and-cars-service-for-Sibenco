@@ -3,15 +3,15 @@ services:
     image: postgres:latest
     container_name: postgres_database
     environment:
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_DB=${PG_DATABASE}
+      - POSTGRES_PASSWORD=${PASSWORD}
+      - POSTGRES_USER=${USERNAME}
+      - POSTGRES_DB=${DATABASE}
     ports:
       - ${PG_PORT}:${PG_PORT}
     volumes:
       - pg_data_container:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${USERNAME} -d ${DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,10 +32,10 @@ services:
       - ${EXTERNAL_PORT}:${INTERNAL_PORT}
     environment:
       - PORT=${EXTERNAL_PORT}
-      - USERNAME=${PG_USER}
-      - PASSWORD=${PG_PASSWORD}
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
       - PORT_DB=${PG_PORT}
-      - DATABASE=${PG_DATABASE}
+      - DATABASE=${DATABASE}
     stdin_open: true
     tty: true
 volumes:

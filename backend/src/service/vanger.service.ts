@@ -1,23 +1,45 @@
-import Vanger, { TOrderSpecificationType } from "../entity/vanger";
+import Vanger, { OrderSpecificationType, TVanger, TimeType } from "../entity/vanger";
 import { AppDataSource } from "../data-source";
 import { config } from "../config";
-import { LessThan, MoreThanOrEqual } from "typeorm";
-import { PatchCar } from "./car.service";
-import { PatchDriver } from "./driver.service";
-import Car from "../entity/car";
-import Driver from "../entity/driver";
-import DaysInMonth from "../utils/daysInMonth";
+import { GetCarById, PatchCarTimetable } from "./car.service";
+import { GetDriverById, PatchDriverTimetable } from "./driver.service";
+import { GetSuitableDriversAndCarsForOrder } from "../utils/getSuitableDriverAndCarForOrder";
+import UnixtimeToDays from "../utils/unixtimeToDays";
+import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import Car, { CarTimetableType } from "../entity/car";
+import Driver, { DriverTimetableType } from "../entity/driver";
 
-export async function CreateVanger(data: Vanger) {
-    let vanger = await AppDataSource.getRepository(Vanger).create(data);
+export async function CreateVanger(data: TVanger) {
+    let carTimetable: CarTimetableType = {
+        status: 'B',
+        beginDate: data.timeBegin,
+        endDate: data.timeEnd
+    }
+
+    let driverTimetable: DriverTimetableType = {
+        status: 'B',
+        beginDate: data.timeBegin,
+        endDate: data.timeEnd
+    }
+
+    let car: Car = await GetCarById(data.CarID);
+    let driver: Driver = await GetDriverById(data.DriverID);
+    if (car.location != driver.location) {
+        return 1;
+    }
+
+    await PatchCarTimetable(data.CarID, carTimetable);
+    await PatchDriverTimetable(data.DriverID, driverTimetable);
+
+    let vanger = {
+        car: car,
+        driver: driver,
+        timeBegin: data.timeBegin,
+        timeEnd: data.timeEnd
+    }
+    vanger = await AppDataSource.getRepository(Vanger).create(<Vanger>vanger);
     await AppDataSource.getRepository(Vanger).save(vanger);
-
-    vanger.car.status = "Busy";
-    vanger.driver.status = "B";
-    await PatchCar(vanger.car.id, vanger.car);
-    await PatchDriver(vanger.driver.id, vanger.driver);
-
-    return vanger;
+    return 0;
 }
 
 export async function GetAllVangers(page: number, pageSize: number) {
@@ -32,21 +54,110 @@ export async function GetAllVangers(page: number, pageSize: number) {
     return vangers;
 }
 
+export async function GetSuitableVangerBySomething(order: OrderSpecificationType) {
+    const timeInDays = UnixtimeToDays(order.endDate, order.beginDate);
+    const timeBegin = order.beginDate;
+    const timeEnd = order.endDate;
+    order.beginDate = timeInDays.begin;
+    order.endDate = timeInDays.end;
+
+    let vanger: Vanger = <Vanger>await GetSuitableDriversAndCarsForOrder(order, true);
+    vanger.timeBegin = timeBegin;
+    vanger.timeEnd = timeEnd;
+
+    let carTimetable: CarTimetableType = {
+        status: 'B',
+        beginDate: vanger.timeBegin,
+        endDate: vanger.timeEnd
+    }
+
+    let driverTimetable: DriverTimetableType = {
+        status: 'B',
+        beginDate: vanger.timeBegin,
+        endDate: vanger.timeEnd
+    }
+
+    await PatchCarTimetable(vanger.car.id, carTimetable);
+    await PatchDriverTimetable(vanger.driver.id, driverTimetable);
+
+    vanger = await AppDataSource.getRepository(Vanger).create(vanger);
+    await AppDataSource.getRepository(Vanger).save(vanger);
+
+    return vanger;
+}
+
+export async function GetSuitableDriversAndCars(order: OrderSpecificationType, page: number, pageSize: number) {
+    const timeInDays = UnixtimeToDays(order.endDate, order.beginDate);
+    order.beginDate = timeInDays.begin;
+    order.endDate = timeInDays.end;
+
+    let carsAndDrivers = await GetSuitableDriversAndCarsForOrder(order, false);
+    return {
+        cars: carsAndDrivers.cars.slice(page * pageSize - 1, page * pageSize + pageSize),
+        drivers: carsAndDrivers.drivers.slice(page * pageSize - 1, page * pageSize + pageSize)
+    };
+}
+
 export async function DeleteVanger(id: string) {
     let vanger = await GetVangerById(id);
     if (!vanger) {
         return 0;
     }
-    
-    vanger.car.status = "Ready";
-    vanger.driver.status = "F";
-    await PatchCar(vanger.car.id, vanger.car);
-    await PatchDriver(vanger.driver.id, vanger.driver);
+
+    let carTimetable: CarTimetableType = {
+        status: 'F',
+        beginDate: vanger.timeBegin,
+        endDate: vanger.timeEnd
+    }
+
+    let driverTimetable: DriverTimetableType = {
+        status: 'F',
+        beginDate: vanger.timeBegin,
+        endDate: vanger.timeEnd
+    }
+
+    await PatchCarTimetable(vanger.car.id, carTimetable);
+    await PatchDriverTimetable(vanger.driver.id, driverTimetable);
 
     const result = await AppDataSource.getRepository(Vanger).delete(id);
     return result.affected;
 }
 
+export async function GetVangersByDriverIdAndTimeInterval(driverId: string, time: TimeType, page: number, pageSize: number) {
+    const vangers: Vanger[] = await AppDataSource.getRepository(Vanger).find({
+        where: {
+            driver: {
+                id: driverId
+            },
+            timeEnd: MoreThanOrEqual(time.timeBegin),
+            timeBegin: LessThanOrEqual(time.timeEnd)
+        },
+        take: pageSize,
+        skip: page * pageSize,
+    })
+
+    return vangers;
+}
+
+export async function GetVangersByCarIdAndTimeInterval(carId: string, time: TimeType, page: number, pageSize: number) {
+    const vangers: Vanger[] = await AppDataSource.getRepository(Vanger).find({
+        where: {
+            car: {
+                id: carId
+            },
+            timeEnd: MoreThanOrEqual(time.timeBegin),
+            timeBegin: LessThanOrEqual(time.timeEnd)
+        },
+        take: pageSize,
+        skip: page * pageSize,
+    })
+
+    return vangers;
+}
+
+/**
+ * TO-DO: Как быть с изменением маршрута при мёрдже?
+ */
 export async function PatchVanger(id:string, data: Vanger) {
     const result = await AppDataSource.getRepository(Vanger).update(id, data);
     return result.affected;
@@ -54,55 +165,4 @@ export async function PatchVanger(id:string, data: Vanger) {
 
 export async function GetVangerById(id: string) {
     return await AppDataSource.getRepository(Vanger).findOneBy({id: id});
-}
-
-export async function GetSuitableDriversAndCarsForOrder(order: TOrderSpecificationType) {
-    let carsForOrder = await AppDataSource.getRepository(Car).findBy({
-        loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
-        numberOfPassengersInCar: LessThan(order.maxNumberOfPassengers - order.numberOfPassengers),
-        amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
-        status: "Ready"
-    });
-
-    let drivers = await AppDataSource.getRepository(Driver).findBy({
-        status: "F"
-    })
-
-    if (!carsForOrder.length || !drivers.length) {
-        throw new Error(config.errors.NotFound + 'cars or drivers for this order');
-    }
-
-    let driversForOrder: Driver[] = [];
-    const date = new Date();
-    const days = DaysInMonth(date.getFullYear(), date.getMonth());
-    const todayDateInDays = date.getDate() + (date.getMonth() - 1) * days;
-    for (let i: number = 0; i < drivers.length; ++i) {
-        if (drivers[i].timetable[todayDateInDays] != "F") {
-            continue;
-        }
-        driversForOrder.push(drivers[i]);
-    }
-
-    if (!driversForOrder.length) {
-        throw new Error(config.errors.NotFound + 'drivers for this order');
-    }
-
-    return {car: carsForOrder, driver: driversForOrder};
-}
-
-
-export async function GetSuitableVangersForOrder(order: TOrderSpecificationType) {
-    const vangersForOrder = await AppDataSource.getRepository(Vanger).findBy({
-        car: {
-            loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
-            numberOfPassengersInCar: LessThan(order.maxNumberOfPassengers - order.numberOfPassengers),
-            amountOfCargoInCar: LessThan(order.maxAmountOfCargo - order.amountOfCargo),
-        }
-    })
-
-    if (!vangersForOrder.length) {
-        throw new Error(config.errors.NotFound + 'vangers');
-    }
-
-    return vangersForOrder;
 }

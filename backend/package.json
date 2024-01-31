@@ -18,6 +18,8 @@
    "license": "MIT",
    "devDependencies": {
       "@types/node": "^20.9.0",
+      "swagger-jsdoc": "^6.2.8",
+      "swagger-ui-express": "^5.0.0",
       "ts-node": "10.7.0",
       "typescript": "4.5.2"
    },
@@ -26,6 +28,8 @@
       "build": "rimraf ./build && tsc",
       "start:dev": "npx nodemon",
       "start": "yarn build && node build/index.js",
-      "lint": "eslint . --ext .ts"
+      "lint": "eslint . --ext .ts",
+      "makemigrations": "npm run typeorm migration:generate -- -d src/data-source.ts src/migration/auto",
+      "migrate": "npm run typeorm migration:run -- -d src/data-source.ts"
    }
 }
