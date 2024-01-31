@@ -21,6 +21,10 @@ const router = express.Router();
  *              description: created successfully
  *          500:
  *              description: some error message
+ */
+/**
+ * @openapi
+ * /cars/find_by_something:
  *  get:
  *      tags:
  *          - Car
@@ -40,7 +44,7 @@ const router = express.Router();
  *          - name: loadCapacity
  *            in: body
  *            schema:
- *              type: float
+ *              type: number
  *            description: "Общая ёмкость: пассажиры + груз"
  *          - name: numberOfPassengersInCar
  *            in: body
@@ -51,7 +55,7 @@ const router = express.Router();
  *          - name: amountOfCargoInCar
  *            in: body
  *            schema:
- *              type: float
+ *              type: number
  *            description: "Текущее количество груза в машине"
  *          - name: location
  *            in: body
@@ -75,7 +79,7 @@ const router = express.Router();
  *              description: some error message
  */
 router.post('/', carController.CreateCar);
-router.get('/', carController.GetCarsByParams);
+router.post('/find_by_something', carController.GetCarsByParams);
 
 /**
  * @openapi
@@ -100,7 +104,7 @@ router.get('/all', carController.GetAllCars);
 
 /**
  * @openapi
- * /cars/:id:
+ * /cars/{id}:
  *  delete:
  *      tags:
  *          - Car
@@ -110,8 +114,7 @@ router.get('/all', carController.GetAllCars);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
  *      responses:
  *          200:
  *              description: deleted successfully
@@ -128,8 +131,13 @@ router.get('/all', carController.GetAllCars);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/PatchCar'
  *      responses:
  *          200:
  *              description: updated successfully
@@ -146,8 +154,7 @@ router.get('/all', carController.GetAllCars);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
  *      responses:
  *          200:
  *              description: "Машина с соответсвующим id"
@@ -163,5 +170,34 @@ router.get('/all', carController.GetAllCars);
 router.delete('/:id', carController.DeleteCar);
 router.patch('/:id', carController.PatchCar);
 router.get('/:id', carController.GetCarById);
+
+/**
+ * @openapi
+ * /cars/{id}/timetable:
+ *  patch:
+ *      tags:
+ *          - Car
+ *      description: "Запрос на установление определённого стутуса (см status) на промежуток времени для машины по id НЕ использовать без предварительного выполения запроса /vangers/:carId/by_car с теми же параметрами!!!"
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            required: true
+ *            schema:
+ *               type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/PatchCarTimetable'
+ *      responses:
+ *          200:
+ *              description: updated successfully
+ *          400:
+ *              description: bad id
+ *          500:
+ *              description: some error message
+ */
+router.patch('/:id/timetable', carController.PatchCarTimetable)
 
 export default router;

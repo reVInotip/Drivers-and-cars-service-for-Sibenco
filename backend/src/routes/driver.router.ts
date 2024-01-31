@@ -21,7 +21,13 @@ const router = express.Router();
  *              description: created successfully
  *          500:
  *              description: some error message
- *  get:
+ */
+router.post('/', driverController.CreateDriver);
+
+/**
+ * @openapi
+ * /drivers/find_by_something:
+ *  post:
  *      tags:
  *          - Driver
  *      description: "Запрос на получение водителя по определённым параметрам"
@@ -59,8 +65,7 @@ const router = express.Router();
  *          500:
  *              description: some error message
  */
-router.post('/', driverController.CreateDriver);
-router.get('/', driverController.GetDriversByParams);
+router.post('/find_by_something', driverController.GetDriversByParams);
 
 /**
  * @openapi
@@ -85,7 +90,7 @@ router.get('/all', driverController.GetAllDrivers);
 
 /**
  * @openapi
- * /drivers/:id:
+ * /drivers/{id}:
  *  delete:
  *      tags:
  *          - Driver
@@ -95,8 +100,7 @@ router.get('/all', driverController.GetAllDrivers);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
  *      responses:
  *          200:
  *              description: deleted successfully
@@ -113,8 +117,13 @@ router.get('/all', driverController.GetAllDrivers);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/PatchDriver'
  *      responses:
  *          200:
  *              description: updated successfully
@@ -131,8 +140,7 @@ router.get('/all', driverController.GetAllDrivers);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
  *      responses:
  *          200:
  *              description: "Водитель с соответсвующим id"
@@ -149,5 +157,33 @@ router.delete('/:id', driverController.DeleteDriver);
 router.patch('/:id', driverController.PatchDriver);
 router.get('/:id', driverController.GetDriverById);
 
+/**
+ * @openapi
+ * /drivers/{id}/timetable:
+ *  patch:
+ *      tags:
+ *          - Driver
+ *      description: "Запрос на установление определённого стутуса (см status) на промежуток времени для водителя по id НЕ использовать без предварительного выполения запроса /vangers/:driverId/by_driver с теми же параметрами!!!"
+ *      parameters:
+ *          - name: id
+ *            in: path
+ *            required: true
+ *            schema:
+ *               type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/PatchDriverTimetable'
+ *      responses:
+ *          200:
+ *              description: updated successfully
+ *          400:
+ *              description: bad id
+ *          500:
+ *              description: some error message
+ */
+router.patch('/:id/timetable', driverController.PatchDriverTimetable)
 
 export default router;

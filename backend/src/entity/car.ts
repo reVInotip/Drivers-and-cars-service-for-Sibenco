@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
+import Vanger from "./vanger";
 
 type CarStatusType = "B" | "F" | "C";
 /**
@@ -19,6 +20,12 @@ export type TCar = {
     location: string
 }
 
+export type CarTimetableType = {
+    status: CarStatusType,
+    beginDate: number, //unixtime
+    endDate: number //unixtime
+}
+
 /**
  * @openapi
  * components:
@@ -36,9 +43,8 @@ export type TCar = {
  *              - timetable
  *          properties:
  *              id:
- *                  type: integer
- *                  format: int64
- *                  default: 12345
+ *                  type: string
+ *                  default: 12345-aa
  *              numberOfTransport:
  *                  type: integer
  *                  description: "Номер транспорта"
@@ -121,6 +127,59 @@ export type TCar = {
  *                          - F
  *                          - C
  *                      default: F
+ *      PatchCar:
+ *          type: object
+ *          properties:
+ *              numberOfTransport:
+ *                  type: integer
+ *                  description: "Номер транспорта"
+ *                  format: int64
+ *                  default: 8000
+ *              title:
+ *                  type: string
+ *                  description: "Тип грузоперевозки: human - пассажирский, cargo - грузовой, all - грузопассажирский"
+ *                  enum:
+ *                      - human
+ *                      - cargo
+ *                      - all
+ *                  default: all
+ *              loadCapacity:
+ *                  type: float
+ *                  description: "Общая ёмкость: пассажиры + груз"
+ *                  default: 1000
+ *              numberOfPassengersInCar:
+ *                  type: ineger
+ *                  description: "Текущее число пассажиров в машине"
+ *                  format: int64
+ *                  default: 0
+ *              amountOfCargoInCar:
+ *                  type: float
+ *                  description: "Текущее количество груза в машине"
+ *                  default: 0.0
+ *              location:
+ *                  type: string
+ *                  description: "Местоположение"
+ *                  default: Altai region, Barnaul, Lenin street
+ *      PatchCarTimetable:
+ *          type: object
+ *          required:
+ *              - status
+ *              - beginDate
+ *              - endDate
+ *          properties:
+ *              status:
+ *                  type: string
+ *                  description: "Новый статус машины B - занята, F - ждёт работы, C - сломана"
+ *              beginDate:
+ *                  type: integer
+ *                  format: int64
+ *                  description: "Время начала поездки в формате unixtime"
+ *                  default: 555555
+ *              endDate:
+ *                  type: integer
+ *                  format: int64
+ *                  description: "Время окончания поездки в формате unixtime"
+ *                  default: 666666
  *      CarByTitle:
  *          type: object
  *          required:
@@ -146,7 +205,7 @@ export default class Car {
     @Column('text', {default: 'all'})
     title: CarTitleType
 
-    @Column('float')
+    @Column('float', {default: 0})
     loadCapacity: number
 
     @Column('int', {default: 0})
@@ -163,4 +222,7 @@ export default class Car {
 
     @Column('simple-array', {default: 'F'})
     timetable: CarStatusType[366]
+
+    @OneToMany(() => Vanger, (vanger) => vanger.car)
+    vangers: Vanger[]
 }

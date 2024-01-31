@@ -50,6 +50,20 @@ export const PatchCar = SampleController(
     }
 )
 
+export const PatchCarTimetable = SampleController(
+    async(req: Request) => {
+        if(!req.params.id) {
+            return {code: 400, body: config.errors.BadId};
+        }
+
+        const result = await carService.PatchCarTimetable(req.params.id, req.body);
+        if (!result) {
+            return {code: 400, body: config.errors.BadId};
+        }
+        return {code: 200, body: config.messages.successUpdate};
+    }
+)
+
 export const GetCarById = SampleController(
     async(req: Request) => {
         if(!req.params.id) {

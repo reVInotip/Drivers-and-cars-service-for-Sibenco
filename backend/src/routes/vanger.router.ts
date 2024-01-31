@@ -47,7 +47,7 @@ router.get('/all', vangerController.GetAllVangers);
 
 /**
  * @openapi
- * /vangers/:id:
+ * /vangers/{id}:
  *  delete:
  *      tags:
  *          - Vanger
@@ -57,8 +57,7 @@ router.get('/all', vangerController.GetAllVangers);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
  *      responses:
  *          200:
  *              description: deleted successfully
@@ -75,8 +74,13 @@ router.get('/all', vangerController.GetAllVangers);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/PatchVanger'
  *      responses:
  *          200:
  *              description: updated successfully
@@ -93,8 +97,7 @@ router.get('/all', vangerController.GetAllVangers);
  *            in: path
  *            required: true
  *            schema:
- *               type: integer
- *               format: int64
+ *               type: string
  *      responses:
  *          200:
  *              description: "Вангер с соответсвующим id"
@@ -113,51 +116,87 @@ router.get('/:id', vangerController.GetVangerById);
 
 /**
  * @openapi
+ * /vangers/{driverId}/by_driver:
+ *  post:
+ *      tags:
+ *          - Vanger
+ *      description: "Запрос на получение вангеров, за которыми закреплён соответсвующий водитель (именно его id указывается в пути запроса) и по дате начала и конца поездки (в формате unixtime)"
+ *      parameters:
+ *          - name: driverId
+ *            in: path
+ *            required: true
+ *            schema:
+ *               type: string
+ *      requestBody:
+ *          required: flase
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/GetVangerByTime'
+ *      responses:
+ *          200:
+ *              description: "Вангеры с соответсвующим водителем и временем назначения"
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#components/schemas/Vanger'
+ *          400:
+ *              description: bad id
+ *          500:
+ *              description: some error message
+ */
+router.post('/:id/by_driver', vangerController.GetVangersByDriverIdAndTimeInterval);
+
+/**
+ * @openapi
+ * /vangers/{carId}/by_car:
+ *  post:
+ *      tags:
+ *          - Vanger
+ *      description: "Запрос на получение вангеров, за которыми закреплёна соответсвующая машина (именно его id указывается в пути запроса) и по дате начала и конца поездки (в формате unixtime)"
+ *      parameters:
+ *          - name: carId
+ *            in: path
+ *            required: true
+ *            schema:
+ *               type: string
+ *      requestBody:
+ *          required: false
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/GetVangerByTime'
+ *      responses:
+ *          200:
+ *              description: "Вангеры с соответсвующей машиной и временем назначения"
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#components/schemas/Vanger'
+ *          400:
+ *              description: bad id
+ *          500:
+ *              description: some error message
+ */
+router.post('/:id/by_car', vangerController.GetVangersByCarIdAndTimeInterval);
+
+/**
+ * @openapi
  * /vangers/suitable/drivers_and_cars:
- *  get:
+ *  post:
  *      tags:
  *          - Vanger
  *      description: "Запрос на получение подходящих под заказ водителей и машин"
- *      parameters:
- *          - name: maxNumberOfPassengers
- *            required: true
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Максимальное число пассажиров для машины"
- *          - name: maxAmountOfCargo
- *            required: true
- *            in: body
- *            schema:
- *              type: float
- *            description: "Максимальное число груза для машины"
- *          - name: title
- *            required: true
- *            in: body
- *            schema:
- *              type: string
- *            description: "Тип"
- *          - name: location
- *            required: true
- *            in: body
- *            schema:
- *              type: string
- *            description: "Местоположение"
- *          - name: beginDate
- *            required: true
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Дата начала перевозки (unixtime)"
- *          - name: endDate
- *            required: true
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Дата конца перевозки (unixtime)"
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/GetSuitableCarsAndDriversByParams'
  *      responses:
  *          200:
  *              description: "Списки всех подходящих под заказ водителей и машин"
@@ -168,55 +207,21 @@ router.get('/:id', vangerController.GetVangerById);
  *          500:
  *              description: some error message
  */
-router.get('/suitable/drivers_and_cars', vangerController.GetSuitableDriversAndCars);
+router.post('/suitable/drivers_and_cars', vangerController.GetSuitableDriversAndCars);
 
 /**
  * @openapi
  * /vangers/suitable/vanger:
- *  get:
+ *  post:
  *      tags:
  *          - Vanger
  *      description: "Запрос на получение подходящего под заказ вангера"
- *      parameters:
- *          - name: maxNumberOfPassengers
- *            required: true
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Максимальное число пассажиров для машины"
- *          - name: maxAmountOfCargo
- *            required: true
- *            in: body
- *            schema:
- *              type: float
- *            description: "Максимальное число груза для машины"
- *          - name: title
- *            required: true
- *            in: body
- *            schema:
- *              type: string
- *            description: "Тип"
- *          - name: location
- *            required: true
- *            in: body
- *            schema:
- *              type: string
- *            description: "Местоположение"
- *          - name: beginDate
- *            required: true
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Дата начала перевозки (unixtime)"
- *          - name: endDate
- *            required: true
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Дата конца перевозки (unixtime)"
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#components/schemas/GetSuitableCarsAndDriversByParams'
  *      responses:
  *          200:
  *              description: "Список всех подходящих под заказ вангеров"
@@ -229,6 +234,6 @@ router.get('/suitable/drivers_and_cars', vangerController.GetSuitableDriversAndC
  *          500:
  *              description: some error message
  */
-router.get('/suitable/vanger', vangerController.GetSuitableVangerByTitle);
+router.post('/suitable/vanger', vangerController.GetSuitableVangerBySomething);
 
 export default router

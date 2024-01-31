@@ -50,6 +50,20 @@ export const PatchDriver = SampleController(
     }
 )
 
+export const PatchDriverTimetable = SampleController(
+    async(req: Request) => {
+        if(!req.params.id) {
+            return {code: 400, body: config.errors.BadId};
+        }
+
+        const result = await driverService.PatchDriverTimetable(req.params.id, req.body);
+        if (!result) {
+            return {code: 400, body: config.errors.BadId};
+        }
+        return {code: 200, body: config.messages.successUpdate};
+    }
+)
+
 export const GetDriverById = SampleController(
     async(req: Request) => {
         if(!req.params.id) {

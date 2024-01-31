@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm"
+import Vanger from "./vanger";
 
 type DriverStatusType = "H" | "S" | "F" | "B";
 /*
@@ -13,6 +14,12 @@ export type TDriver = {
     lastName: string,
     category: string,
     location: string
+}
+
+export type DriverTimetableType = {
+    status: DriverStatusType,
+    beginDate: number, //unixtime
+    endDate: number //unixtime
 }
 
 /**
@@ -30,9 +37,8 @@ export type TDriver = {
  *              - timetable
  *          properties:
  *              id:
- *                  type: integer
- *                  format: int64
- *                  default: 12345
+ *                  type: string
+ *                  default: 12345-aa
  *              firstName:
  *                  type: string
  *                  default: "Иван"
@@ -104,6 +110,48 @@ export type TDriver = {
  *                          - F
  *                          - B
  *                      default: F
+ *      PatchDriver:
+ *          type: object
+ *          properties:
+ *              firstName:
+ *                  type: string
+ *                  default: "Иван"
+ *              lastName:
+ *                  type: string
+ *                  default: "Иванов"
+ *              category:
+ *                  type: string
+ *                  description: "Категория водительского удостоверения"
+ *                  enum:
+ *                      - A
+ *                      - B
+ *                      - C
+ *                      - D
+ *                      - M
+ *                  default: C
+ *              location:
+ *                  type: string
+ *                  default: Altai region, Barnaul, Lenin street
+ *      PatchDriverTimetable:
+ *          type: object
+ *          required:
+ *              - status
+ *              - beginDate
+ *              - endDate
+ *          properties:
+ *              status:
+ *                  type: string
+ *                  description: "Новый статус водителя H - выходной, S - больничный, F - ждёт работы, B - занят"
+ *              beginDate:
+ *                  type: integer
+ *                  format: int64
+ *                  description: "Время начала поездки в формате unixtime"
+ *                  default: 555555
+ *              endDate:
+ *                  type: integer
+ *                  format: int64
+ *                  description: "Время окончания поездки в формате unixtime"
+ *                  default: 666666
  *      DriverByCategory:
  *          type: object
  *          required:
@@ -137,6 +185,9 @@ export default class Driver {
     @Column('text', {default: 'New-York'})
     location: string
 
-    @Column("simple-array")
+    @Column('simple-array', {default: 'F'})
     timetable: DriverStatusType[366]
+
+    @OneToMany(() => Vanger, (vanger) => vanger.car)
+    vangers: Vanger[]
 }

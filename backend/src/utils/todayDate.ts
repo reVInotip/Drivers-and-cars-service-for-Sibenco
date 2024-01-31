@@ -1,7 +1,7 @@
 export default function TodayDateInDays(): number {
     const date = new Date();
     const year: number = date.getFullYear();
-    const month: number = date.getMonth();
+    const month: number = date.getMonth() + 1;
     
     let sumDays = 0;
     for (let i: number = 1; i < month; ++i) {

@@ -1,31 +1,29 @@
 import { AppDataSource } from "../data-source";
-import { LessThan, MoreThanOrEqual, ArrayContains } from "typeorm";
+import { LessThan, MoreThanOrEqual, ArrayContains, Int32 } from "typeorm";
 import Car from "../entity/car";
 import Driver from "../entity/driver";
 import { config } from "../config";
-import { OrderSpecificationType, RouteSpecificationType } from "../entity/vanger";
+import { OrderSpecificationType } from "../entity/vanger";
 
-export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificationType, timeBegin: number, timeEnd: number, one: boolean) {
+export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificationType, one: boolean) {
     let cars = await AppDataSource.getRepository(Car).findBy({
         loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
         numberOfPassengersInCar: 0,
         amountOfCargoInCar: 0.0,
-        timetable: ArrayContains(['F']),
         location: order.location,
         title: order.title
     });
 
     let drivers = await AppDataSource.getRepository(Driver).findBy({
-        timetable: ArrayContains(['F']),
         location: order.location
     })
 
-    let driversForOrder: Driver[] = null;
-    let carsForOrder: Car[] = null;
+    let driversForOrder: Driver[] = [];
+    let carsForOrder: Car[] = [];
 
     drivers.forEach ((driver) => {
         let isApproach: boolean = true;
-        for (let i: number = timeBegin - 1; i < timeEnd; ++i) {
+        for (let i: number = order.beginDate - 1; i < order.endDate; ++i) {
             if (driver.timetable[i] != 'F') {
                 isApproach = false;
                 break;
@@ -39,13 +37,13 @@ export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificatio
         }
     });
 
-    if (!driversForOrder) {
+    if (!driversForOrder.length) {
         throw new Error(config.errors.NotFound + 'drivers for this order');
     }
 
     cars.forEach ((car) => {
         let isApproach: boolean = true;
-        for (let i: number = timeBegin - 1; i < timeEnd; ++i) {
+        for (let i: number = order.beginDate - 1; i < order.endDate; ++i) {
             if (car.timetable[i] != 'F') {
                 isApproach = false;
                 break;
@@ -59,7 +57,7 @@ export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificatio
         }
     });
 
-    if (!carsForOrder) {
+    if (!carsForOrder.length) {
         throw new Error(config.errors.NotFound + 'cars for this order');
     }
 
@@ -70,7 +68,7 @@ export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificatio
     }
 }
 
-
+/*
 export async function GetSuitableDriversAndCarsForRoute(route: RouteSpecificationType, timeBegin: number, timeEnd: number) {
     let cars = await AppDataSource.getRepository(Car).findBy({
         loadCapacity: MoreThanOrEqual(route.maxAmountOfCargo + route.maxNumberOfPassengers),
@@ -124,3 +122,4 @@ export async function GetSuitableDriversAndCarsForRoute(route: RouteSpecificatio
 
     return {cars: carsForOrder, drivers: driversForOrder};
 }
+*/
