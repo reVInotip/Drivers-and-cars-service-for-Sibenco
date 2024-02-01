@@ -1,11 +1,11 @@
 import "reflect-metadata"
-import {DataSource} from 'typeorm';
+import { DataSource } from 'typeorm';
 import Car from './entity/car';
 import Driver from './entity/driver';
 import Vanger from './entity/vanger';
 import { config } from 'dotenv'
 
-config({path: './.env'});
+config({ path: './.env__' });
 
 export const AppDataSource = new DataSource({
     type: "postgres",
