@@ -14,7 +14,8 @@ export type CarTitleType = "human" | "cargo" | "all";
 export type TCar = {
     numberOfTransport: number,
     title: CarTitleType,
-    loadCapacity: number,
+    maxNumberOfPassengersInCar: number,
+    maxAmountOfCargoInCar: number
     numberOfPassengersInCar: number,
     amountOfCargoInCar: number,
     location: string
@@ -36,7 +37,8 @@ export type CarTimetableType = {
  *              - id
  *              - numberOfTransport
  *              - title
- *              - loadCapacity
+ *              - maxNumberOfPassengersInCar
+ *              - maxAmountOfCargoInCar
  *              - numberOfPassengersInCar
  *              - amountOfCargoInCar
  *              - location
@@ -58,9 +60,14 @@ export type CarTimetableType = {
  *                      - cargo
  *                      - all
  *                  default: all
- *              loadCapacity:
+ *              maxNumberOfPassengersInCar:
+ *                  type: ineger
+ *                  description: "Максимальное число пассажиров в машине"
+ *                  format: int64
+ *                  default: 1000
+ *              maxAmountOfCargoInCar:
  *                  type: float
- *                  description: "Общая ёмкость: пассажиры + груз"
+ *                  description: "Максимольное количество груза в машине (кг)"
  *                  default: 1000
  *              numberOfPassengersInCar:
  *                  type: ineger
@@ -69,7 +76,7 @@ export type CarTimetableType = {
  *                  default: 0
  *              amountOfCargoInCar:
  *                  type: float
- *                  description: "Текущее количество груза в машине"
+ *                  description: "Текущее количество груза в машине (кг)"
  *                  default: 0.0
  *              location:
  *                  type: string
@@ -91,7 +98,8 @@ export type CarTimetableType = {
  *          required:
  *              - numberOfTransport
  *              - title
- *              - loadCapacity
+ *              - maxNumberOfPassengersInCar
+ *              - maxAmountOfCargoInCar
  *              - location
  *              - timetable
  *          properties:
@@ -108,9 +116,14 @@ export type CarTimetableType = {
  *                      - cargo
  *                      - all
  *                  default: all
- *              loadCapacity:
+ *              maxNumberOfPassengersInCar:
+ *                  type: ineger
+ *                  description: "Максимальное число пассажиров в машине"
+ *                  format: int64
+ *                  default: 1000
+ *              maxAmountOfCargoInCar:
  *                  type: float
- *                  description: "Общая ёмкость: пассажиры + груз"
+ *                  description: "Максимальное количество груза в машине (кг)"
  *                  default: 1000
  *              location:
  *                  type: string
@@ -143,9 +156,14 @@ export type CarTimetableType = {
  *                      - cargo
  *                      - all
  *                  default: all
- *              loadCapacity:
+ *              maxNumberOfPassengersInCar:
+ *                  type: ineger
+ *                  description: "Максимальное число пассажиров в машине"
+ *                  format: int64
+ *                  default: 1000
+ *              maxAmountOfCargoInCar:
  *                  type: float
- *                  description: "Общая ёмкость: пассажиры + груз"
+ *                  description: "Максимальное количество груза в машине (кг)"
  *                  default: 1000
  *              numberOfPassengersInCar:
  *                  type: ineger
@@ -180,11 +198,14 @@ export type CarTimetableType = {
  *                  format: int64
  *                  description: "Время окончания поездки в формате unixtime"
  *                  default: 666666
- *      CarByTitle:
+ *      CarBySomething:
  *          type: object
- *          required:
- *              - title
  *          properties:
+ *              numberOfTransport:
+ *                  type: integer
+ *                  description: "Номер транспорта"
+ *                  format: int64
+ *                  default: 8000
  *              title:
  *                  type: string
  *                  description: "Тип грузоперевозки: human - пассажирский, cargo - грузовой, all - грузопассажирский"
@@ -193,6 +214,28 @@ export type CarTimetableType = {
  *                      - cargo
  *                      - all
  *                  default: all
+ *              maxNumberOfPassengersInCar:
+ *                  type: ineger
+ *                  description: "Максимальное число людей для перевозки (будут выдани результаты с такой же ёмкостью или больше)"
+ *                  format: int64
+ *                  default: 1000
+ *              maxAmountOfCargoInCar:
+ *                  type: float
+ *                  description: "Максимальное количество груза для перевозки (будут выдани результаты с такой же ёмкостью или больше) (кг)"
+ *                  default: 1000
+ *              numberOfPassengersInCar:
+ *                  type: ineger
+ *                  description: "Текущее число пассажиров в машине"
+ *                  format: int64
+ *                  default: 0
+ *              amountOfCargoInCar:
+ *                  type: float
+ *                  description: "Текущее количество груза в машине (кг)"
+ *                  default: 0.0
+ *              location:
+ *                  type: string
+ *                  description: "Местоположение"
+ *                  default: Altai region, Barnaul, Lenin street
  */
 @Entity()
 export default class Car {
@@ -205,8 +248,11 @@ export default class Car {
     @Column('text', {default: 'all'})
     title: CarTitleType
 
+    @Column('int', {default: 0})
+    maxNumberOfPassengersInCar: number
+
     @Column('float', {default: 0})
-    loadCapacity: number
+    maxAmountOfCargoInCar: number
 
     @Column('int', {default: 0})
     numberOfPassengersInCar: number

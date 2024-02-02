@@ -152,11 +152,15 @@ export type DriverTimetableType = {
  *                  format: int64
  *                  description: "Время окончания поездки в формате unixtime"
  *                  default: 666666
- *      DriverByCategory:
+ *      DriverBySomething:
  *          type: object
- *          required:
- *              - category
  *          properties:
+ *              firstName:
+ *                  type: string
+ *                  default: "Иван"
+ *              lastName:
+ *                  type: string
+ *                  default: "Иванов"
  *              category:
  *                  type: string
  *                  description: "Категория водительского удостоверения"
@@ -167,6 +171,9 @@ export type DriverTimetableType = {
  *                      - D
  *                      - M
  *                  default: C
+ *              location:
+ *                  type: string
+ *                  default: Altai region, Barnaul, Lenin street
  */
 @Entity()
 export default class Driver {

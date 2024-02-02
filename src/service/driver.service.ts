@@ -4,8 +4,9 @@ import { config } from "../config";
 import UnixtimeToDays from "../utils/unixtimeToDays";
 
 export async function CreateDriver(data: Driver) {
-    const driver = await AppDataSource.getRepository(Driver).create(data);
-    await AppDataSource.getRepository(Driver).save(driver);
+    let driver = await AppDataSource.getRepository(Driver).create(data);
+    driver = await AppDataSource.getRepository(Driver).save(driver);
+    return driver.id
 }
 
 export async function GetAllDrivers(page: number, pageSize: number) {

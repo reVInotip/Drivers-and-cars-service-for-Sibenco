@@ -29,45 +29,12 @@ const router = express.Router();
  *      tags:
  *          - Car
  *      description: "Запрос на получение машины по определённым параметрам (в том числе по типу)"
- *      parameters:
- *          - name: numberOfTransport
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Номер транспорта"
- *          - name: title
- *            in: body
- *            schema:
- *              type: string
- *            description: "Тип"
- *          - name: loadCapacity
- *            in: body
- *            schema:
- *              type: number
- *            description: "Общая ёмкость: пассажиры + груз"
- *          - name: numberOfPassengersInCar
- *            in: body
- *            schema:
- *              type: integer
- *              format: int64
- *            description: "Текущее число пассажиров в машине"
- *          - name: amountOfCargoInCar
- *            in: body
- *            schema:
- *              type: number
- *            description: "Текущее количество груза в машине"
- *          - name: location
- *            in: body
- *            schema:
- *              type: string
- *            description: "Местоположение"
  *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#components/schemas/CarByTitle'
+ *                      $ref: '#components/schemas/CarBySomething'
  *      responses:
  *          200:
  *              description: "Список всех машин соответсвующих параметрам"

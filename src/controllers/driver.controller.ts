@@ -5,8 +5,8 @@ import * as driverService from "../service/driver.service";
 
 export const CreateDriver = SampleController(
     async (req: Request) => {
-        driverService.CreateDriver(req.body)
-        return {code: 200, body: config.messages.successCreate};
+        const id = await driverService.CreateDriver(req.body)
+        return {code: 200, body: id, message: config.messages.successCreate};
     }
 );
 
