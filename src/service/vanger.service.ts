@@ -25,7 +25,7 @@ export async function CreateVanger(data: TVanger) {
     let car: Car = await GetCarById(data.CarID);
     let driver: Driver = await GetDriverById(data.DriverID);
     if (car.location != driver.location) {
-        return 1;
+        return "";
     }
 
     await PatchCarTimetable(data.CarID, carTimetable);
@@ -37,9 +37,9 @@ export async function CreateVanger(data: TVanger) {
         timeBegin: data.timeBegin,
         timeEnd: data.timeEnd
     }
-    vanger = await AppDataSource.getRepository(Vanger).create(<Vanger>vanger);
-    await AppDataSource.getRepository(Vanger).save(vanger);
-    return 0;
+    let vangerObject = await AppDataSource.getRepository(Vanger).create(<Vanger>vanger);
+    vangerObject = await AppDataSource.getRepository(Vanger).save(vanger);
+    return vangerObject.id;
 }
 
 export async function GetAllVangers(page: number, pageSize: number) {

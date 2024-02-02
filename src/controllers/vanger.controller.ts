@@ -6,11 +6,11 @@ import Vanger from "../entity/vanger";
 
 export const CreateVanger = SampleController(
     async (req: Request) => {
-        const isNotOk = await vangerService.CreateVanger(req.body);
-        if (isNotOk) {
+        const id = await vangerService.CreateVanger(req.body);
+        if (!id) {
             return {code: 400, body: config.errors.Create + 'vanger, bad args!'};
         }
-        return {code: 200, body: config.messages.successCreate};
+        return {code: 200, body: id, message: config.messages.successCreate};
     }
 );
 

@@ -135,7 +135,7 @@ export type TVanger = {
  *          type: object
  *          description: "Схема для запроса на получение подходящих под параметры машин и водителей"
  *          required:
- *              - maxNumberOfPassenger
+ *              - maxNumberOfPassengers
  *              - maxAmountOfCargo
  *              - title
  *              - location

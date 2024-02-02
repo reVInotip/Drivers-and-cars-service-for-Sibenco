@@ -1,11 +1,13 @@
 import Car, { TCar, CarTimetableType } from "../entity/car";
 import { AppDataSource } from "../data-source";
+import { MoreThanOrEqual } from "typeorm";
 import { config } from "../config";
 import UnixtimeToDays from "../utils/unixtimeToDays";
 
 export async function CreateCar(data: Car) {
-    const car = await AppDataSource.getRepository(Car).create(data);
-    await AppDataSource.getRepository(Car).save(car);
+    let car = await AppDataSource.getRepository(Car).create(data);
+    car = await AppDataSource.getRepository(Car).save(car);
+    return car.id
 }
 
 export async function GetAllCars(page: number, pageSize: number) {
@@ -57,7 +59,8 @@ export async function GetCarsByParams(data: TCar, page: number, pageSize: number
         where: {
             numberOfTransport: data.numberOfTransport,
             title: data.title,
-            loadCapacity: data.loadCapacity,
+            maxNumberOfPassengersInCar: MoreThanOrEqual(data.maxNumberOfPassengersInCar),
+            maxAmountOfCargoInCar: MoreThanOrEqual(data.maxAmountOfCargoInCar),
             numberOfPassengersInCar: data.numberOfPassengersInCar,
             amountOfCargoInCar: data.amountOfCargoInCar,
             location: data.location

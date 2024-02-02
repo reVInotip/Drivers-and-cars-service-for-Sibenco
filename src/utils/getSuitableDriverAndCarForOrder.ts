@@ -1,5 +1,5 @@
 import { AppDataSource } from "../data-source";
-import { LessThan, MoreThanOrEqual, ArrayContains, Int32 } from "typeorm";
+import { MoreThanOrEqual } from "typeorm";
 import Car from "../entity/car";
 import Driver from "../entity/driver";
 import { config } from "../config";
@@ -7,7 +7,8 @@ import { OrderSpecificationType } from "../entity/vanger";
 
 export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificationType, one: boolean) {
     let cars = await AppDataSource.getRepository(Car).findBy({
-        loadCapacity: MoreThanOrEqual(order.maxAmountOfCargo + order.maxNumberOfPassengers),
+        maxNumberOfPassengersInCar: MoreThanOrEqual(order.maxNumberOfPassengers),
+        maxAmountOfCargoInCar: MoreThanOrEqual(order.maxAmountOfCargo),
         numberOfPassengersInCar: 0,
         amountOfCargoInCar: 0.0,
         location: order.location,

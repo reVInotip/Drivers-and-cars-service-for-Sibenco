@@ -5,8 +5,8 @@ import * as carService from "../service/car.service";
 
 export const CreateCar = SampleController(
     async (req: Request) => {
-        carService.CreateCar(req.body)
-        return {code: 200, body: config.messages.successCreate};
+        const id: string = await carService.CreateCar(req.body)
+        return {code: 200, body: id, message: config.messages.successCreate};
     }
 );
 

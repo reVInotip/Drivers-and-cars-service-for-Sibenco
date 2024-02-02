@@ -31,30 +31,12 @@ router.post('/', driverController.CreateDriver);
  *      tags:
  *          - Driver
  *      description: "Запрос на получение водителя по определённым параметрам"
- *      parameters:
- *          - name: firstName
- *            in: body
- *            schema:
- *              type: string
- *          - name: lastName
- *            in: body
- *            schema:
- *              type: string
- *          - name: category
- *            in: body
- *            schema:
- *              type: string
- *            description: "Категория водительского удостоверения"
- *          - name: location
- *            in: body
- *            schema:
- *              type: string
  *      requestBody:
  *          required: true
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#components/schemas/DriverByCategory'
+ *                      $ref: '#components/schemas/DriverBySomething'
  *      responses:
  *          200:
  *              description: "Список всех водителей соответсвующих параметрам"
