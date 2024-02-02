@@ -31,6 +31,7 @@
       "start": "yarn build && node build/index.js",
       "lint": "eslint . --ext .ts",
       "makemigrations": "npm run typeorm migration:generate -- -d src/data-source.ts src/migration/auto",
-      "migrate": "npm run typeorm migration:run -- -d src/data-source.ts"
+      "migrate": "npm run typeorm migration:run -- -d src/data-source.ts",
+      "automigrate": "yarn makemigrations && yarn migrate"
    }
 }
