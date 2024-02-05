@@ -11,10 +11,12 @@ export async function CreateCar(data: Car) {
 }
 
 export async function GetAllCars(page: number, pageSize: number) {
+    console.log(page, pageSize);
     const cars = await AppDataSource.getRepository(Car).find({
         take: pageSize,
         skip: page * pageSize,
     });
+    console.log(cars);
 
     if (!cars) {
         throw new Error(config.errors.NotFound + 'cars');
