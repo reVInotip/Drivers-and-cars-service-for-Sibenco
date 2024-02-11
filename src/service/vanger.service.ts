@@ -8,6 +8,7 @@ import UnixtimeToDays from "../utils/unixtimeToDays";
 import { LessThanOrEqual, MoreThanOrEqual } from "typeorm";
 import Car, { CarTimetableType } from "../entity/car";
 import Driver, { DriverTimetableType } from "../entity/driver";
+import InBorders from "../utils/inBorders";
 
 export async function CreateVanger(data: TVanger) {
     let carTimetable: CarTimetableType = {
@@ -24,7 +25,10 @@ export async function CreateVanger(data: TVanger) {
 
     let car: Car = await GetCarById(data.CarID);
     let driver: Driver = await GetDriverById(data.DriverID);
-    if ((car.latitude != driver.latitude) || (car.longitude != driver.longitude)) {
+    if (
+        (InBorders(car.latitude, data.locationBorders.latitude) && InBorders(car.longitude, data.locationBorders.longitude)) &&
+        (InBorders(driver.latitude, data.locationBorders.latitude) && InBorders(driver.longitude, data.locationBorders.longitude))
+    ) {
         return "";
     }
 

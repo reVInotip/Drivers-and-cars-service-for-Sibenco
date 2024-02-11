@@ -14,14 +14,24 @@ export type RouteSpecificationType = {
 }
 */
 
+type LocationBorders = {
+    latitude: {
+        min: string,
+        max: string
+    },
+    longitude: {
+        min: string,
+        max: string
+    }
+}
+
 export type OrderSpecificationType = {
     maxNumberOfPassengers: number,
     maxAmountOfCargo: number,
     title: CarTitleType,
-    latitude: string,
-    longitude: string,
     beginDate: number,
-    endDate: number
+    endDate: number,
+    locationBorders: LocationBorders
 }
 
 export type TimeType = {
@@ -33,7 +43,8 @@ export type TVanger = {
     CarID: string,
     DriverID: string,
     timeBegin: number,
-    timeEnd: number
+    timeEnd: number,
+    locationBorders: LocationBorders
 }
 
 
@@ -76,6 +87,7 @@ export type TVanger = {
  *              - CarID
  *              - DriverID
  *              - timeEnd
+ *              - locationBorders
  *          properties:
  *              CarID:
  *                  type: string
@@ -95,6 +107,38 @@ export type TVanger = {
  *                  format: int64
  *                  description: "Время, на которое назначено окончание поездки для вангера в формате unixtime"
  *                  default: 666666
+ *              locationBorders:
+ *                  type: object
+ *                  required:
+ *                      - latitude
+ *                      - longitude
+ *                  properties:
+ *                      latitude:
+ *                          type: object
+ *                          description: "Широта"
+ *                          required:
+ *                              - min
+ *                              - max
+ *                          properties:
+ *                              min:
+ *                                  type: string
+ *                                  description: "Минимальное значение для широты"
+ *                              max:
+ *                                  type: string
+ *                                  description: "Максимальное значение для широты"
+ *                      longitude:
+ *                          type: object
+ *                          description: "Долгота"
+ *                          required:
+ *                              - min
+ *                              - max
+ *                          properties:
+ *                              min:
+ *                                  type: string
+ *                                  description: "Минимальное значение для долготы"
+ *                              max:
+ *                                  type: string
+ *                                  description: "Максимальное значение для долготы"
  *      PatchVanger:
  *          description: "Машина + водитель"
  *          type: object
@@ -132,17 +176,16 @@ export type TVanger = {
  *                  format: int64
  *                  description: "Время окончания поездки в формате unixtime"
  *                  default: 666666
- *      GetSuitableCarsAndDriversByParams:
+ *      GetSuitableVangerByParams:
  *          type: object
  *          description: "Схема для запроса на получение подходящих под параметры машин и водителей"
  *          required:
  *              - maxNumberOfPassengers
  *              - maxAmountOfCargo
  *              - title
- *              - latitude
- *              - longitude
  *              - beginDate
  *              - endDate
+ *              - locationBorders
  *          properties:
  *              maxNumberOfPassengers:
  *                  type: integer
@@ -170,6 +213,38 @@ export type TVanger = {
  *                  type: integer
  *                  format: int64
  *                  description: "Дата конца перевозки (unixtime)"
+ *              locationBorders:
+ *                  type: object
+ *                  required:
+ *                      - latitude
+ *                      - longitude
+ *                  properties:
+ *                      latitude:
+ *                          type: object
+ *                          description: "Широта"
+ *                          required:
+ *                              - min
+ *                              - max
+ *                          properties:
+ *                              min:
+ *                                  type: string
+ *                                  description: "Минимальное значение для широты"
+ *                              max:
+ *                                  type: string
+ *                                  description: "Максимальное значение для широты"
+ *                      longitude:
+ *                          type: object
+ *                          description: "Долгота"
+ *                          required:
+ *                              - min
+ *                              - max
+ *                          properties:
+ *                              min:
+ *                                  type: string
+ *                                  description: "Минимальное значение для долготы"
+ *                              max:
+ *                                  type: string
+ *                                  description: "Максимальное значение для долготы"
  *      DriversAndCars:
  *          type: object
  *          required:
