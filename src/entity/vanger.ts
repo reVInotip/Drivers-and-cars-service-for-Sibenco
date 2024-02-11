@@ -18,7 +18,8 @@ export type OrderSpecificationType = {
     maxNumberOfPassengers: number,
     maxAmountOfCargo: number,
     title: CarTitleType,
-    location: string,
+    latitude: string,
+    longitude: string,
     beginDate: number,
     endDate: number
 }
@@ -138,7 +139,8 @@ export type TVanger = {
  *              - maxNumberOfPassengers
  *              - maxAmountOfCargo
  *              - title
- *              - location
+ *              - latitude
+ *              - longitude
  *              - beginDate
  *              - endDate
  *          properties:
@@ -152,9 +154,14 @@ export type TVanger = {
  *              title:
  *                  type: string
  *                  description: "Тип"
- *              location:
+ *              latitude:
  *                  type: string
- *                  description: "Местоположение"
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *              beginDate:
  *                  type: integer
  *                  format: int64

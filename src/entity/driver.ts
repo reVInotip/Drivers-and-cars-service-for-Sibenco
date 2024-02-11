@@ -10,10 +10,12 @@ B - занят
 */
 
 export type TDriver = {
-    firstName: string,
-    lastName: string,
+    name: string,
     category: string,
-    location: string
+    latitude: string,
+    longitude: string,
+    phoneNumber: string,
+    mail: string
 }
 
 export type DriverTimetableType = {
@@ -30,21 +32,29 @@ export type DriverTimetableType = {
  *          type: object
  *          required:
  *              - id
- *              - firstName
- *              - lastName
+ *              - name
+ *              - phoneNumber
+ *              - mail
  *              - category
- *              - location
+ *              - latitude
+ *              - longitude
  *              - timetable
  *          properties:
  *              id:
  *                  type: string
  *                  default: 12345-aa
- *              firstName:
+ *              name:
  *                  type: string
- *                  default: "Иван"
- *              lastName:
+ *                  description: "ФИО водителя"
+ *                  default: "Иванов Иван Иванович"
+ *              phoneNumber:
  *                  type: string
- *                  default: "Иванов"
+ *                  description: "Номер телефона"
+ *                  default: "88005553535"
+ *              mail:
+ *                  type: string
+ *                  description: "Почта"
+ *                  default: "ivanov@govnoogle.ru"
  *              category:
  *                  type: string
  *                  description: "Категория водительского удостоверения"
@@ -55,9 +65,14 @@ export type DriverTimetableType = {
  *                      - D
  *                      - M
  *                  default: C
- *              location:
+ *              latitude:
  *                  type: string
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *              timetable:
  *                  type: array
  *                  description: "Расписание водителя по дням года"
@@ -73,18 +88,26 @@ export type DriverTimetableType = {
  *      CreateDriver:
  *          type: object
  *          required:
- *              - firstName
- *              - lastName
+ *              - name
+ *              - phoneNumber
+ *              - mail
  *              - category
- *              - location
+ *              - latitude
+ *              - longitude
  *              - timetable
  *          properties:
- *              firstName:
+ *              name:
  *                  type: string
- *                  default: "Иван"
- *              lastName:
+ *                  description: "ФИО водителя"
+ *                  default: "Иванов Иван Иванович"
+ *              phoneNumber:
  *                  type: string
- *                  default: "Иванов"
+ *                  description: "Номер телефона"
+ *                  default: "88005553535"
+ *              mail:
+ *                  type: string
+ *                  description: "Почта"
+ *                  default: "ivanov@govnoogle.ru"
  *              category:
  *                  type: string
  *                  description: "Категория водительского удостоверения"
@@ -95,9 +118,14 @@ export type DriverTimetableType = {
  *                      - D
  *                      - M
  *                  default: C
- *              location:
+ *              latitude:
  *                  type: string
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *              timetable:
  *                  type: array
  *                  description: "Расписание водителя по дням года"
@@ -113,12 +141,18 @@ export type DriverTimetableType = {
  *      PatchDriver:
  *          type: object
  *          properties:
- *              firstName:
+ *              name:
  *                  type: string
- *                  default: "Иван"
- *              lastName:
+ *                  description: "ФИО водителя"
+ *                  default: "Иванов Иван Иванович"
+ *              phoneNumber:
  *                  type: string
- *                  default: "Иванов"
+ *                  description: "Номер телефона"
+ *                  default: "88005553535"
+ *              mail:
+ *                  type: string
+ *                  description: "Почта"
+ *                  default: "ivanov@govnoogle.ru"
  *              category:
  *                  type: string
  *                  description: "Категория водительского удостоверения"
@@ -129,9 +163,14 @@ export type DriverTimetableType = {
  *                      - D
  *                      - M
  *                  default: C
- *              location:
+ *              latitude:
  *                  type: string
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *      PatchDriverTimetable:
  *          type: object
  *          required:
@@ -155,12 +194,18 @@ export type DriverTimetableType = {
  *      DriverBySomething:
  *          type: object
  *          properties:
- *              firstName:
+ *              name:
  *                  type: string
- *                  default: "Иван"
- *              lastName:
+ *                  description: "ФИО водителя"
+ *                  default: "Иванов Иван Иванович"
+ *              phoneNumber:
  *                  type: string
- *                  default: "Иванов"
+ *                  description: "Номер телефона"
+ *                  default: "88005553535"
+ *              mail:
+ *                  type: string
+ *                  description: "Почта"
+ *                  default: "ivanov@govnoogle.ru"
  *              category:
  *                  type: string
  *                  description: "Категория водительского удостоверения"
@@ -171,26 +216,37 @@ export type DriverTimetableType = {
  *                      - D
  *                      - M
  *                  default: C
- *              location:
+ *              latitude:
  *                  type: string
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  */
 @Entity()
 export default class Driver {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column()
-    firstName: string
+    @Column('text', {default: 'Иванов Иван Иванович'})
+    name: string
 
-    @Column()
-    lastName: string
+    @Column('text', {default: '88005553535'})
+    phoneNumber: string
+
+    @Column('text', {default: 'ivanov@govnoogle.com'})
+    mail: string
 
     @Column()
     category: string
 
-    @Column('text', {default: 'New-York'})
-    location: string
+    @Column('text', {default: '0.0'})
+    latitude: string
+
+    @Column('text', {default: '0.0'})
+    longitude: string
 
     @Column('simple-array', {default: 'F'})
     timetable: DriverStatusType[366]

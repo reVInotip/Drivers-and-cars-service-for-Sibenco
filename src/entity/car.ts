@@ -12,13 +12,14 @@ export type CarTitleType = "human" | "cargo" | "all";
  // "human" - пассажирская, "cargo" - грузовая, "all" - грузопассажирская
 
 export type TCar = {
-    numberOfTransport: number,
+    numberOfTransport: string,
     title: CarTitleType,
     maxNumberOfPassengersInCar: number,
     maxAmountOfCargoInCar: number
     numberOfPassengersInCar: number,
     amountOfCargoInCar: number,
-    location: string
+    latitude: string,
+    longitude: string
 }
 
 export type CarTimetableType = {
@@ -36,22 +37,27 @@ export type CarTimetableType = {
  *          required:
  *              - id
  *              - numberOfTransport
+ *              - name
  *              - title
  *              - maxNumberOfPassengersInCar
  *              - maxAmountOfCargoInCar
  *              - numberOfPassengersInCar
  *              - amountOfCargoInCar
- *              - location
+ *              - latitude
+ *              - longitude
  *              - timetable
  *          properties:
  *              id:
  *                  type: string
  *                  default: 12345-aa
  *              numberOfTransport:
- *                  type: integer
+ *                  type: string
  *                  description: "Номер транспорта"
- *                  format: int64
- *                  default: 8000
+ *                  default: 8000a
+ *              name:
+ *                  type: string
+ *                  description: "Название машины"
+ *                  default: "lada granta"
  *              title:
  *                  type: string
  *                  description: "Тип грузоперевозки: human - пассажирский, cargo - грузовой, all - грузопассажирский"
@@ -78,10 +84,14 @@ export type CarTimetableType = {
  *                  type: float
  *                  description: "Текущее количество груза в машине (кг)"
  *                  default: 0.0
- *              location:
+ *              latitude:
  *                  type: string
- *                  description: "Местоположение"
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *              timetable:
  *                  type: array
  *                  description: "Расписание машины по дням года"
@@ -97,17 +107,22 @@ export type CarTimetableType = {
  *          type: object
  *          required:
  *              - numberOfTransport
+ *              - name
  *              - title
  *              - maxNumberOfPassengersInCar
  *              - maxAmountOfCargoInCar
- *              - location
+ *              - latitude
+ *              - longitude
  *              - timetable
  *          properties:
  *              numberOfTransport:
- *                  type: integer
+ *                  type: string
  *                  description: "Номер транспорта"
- *                  format: int64
- *                  default: 8000
+ *                  default: 8000a
+ *              name:
+ *                  type: string
+ *                  description: "Название машины"
+ *                  default: "lada granta"
  *              title:
  *                  type: string
  *                  description: "Тип грузоперевозки: human - пассажирский, cargo - грузовой, all - грузопассажирский"
@@ -125,10 +140,14 @@ export type CarTimetableType = {
  *                  type: float
  *                  description: "Максимальное количество груза в машине (кг)"
  *                  default: 1000
- *              location:
+ *              latitude:
  *                  type: string
- *                  description: "Местоположение"
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *              timetable:
  *                  type: array
  *                  description: "Расписание машины по дням года"
@@ -144,10 +163,13 @@ export type CarTimetableType = {
  *          type: object
  *          properties:
  *              numberOfTransport:
- *                  type: integer
+ *                  type: string
  *                  description: "Номер транспорта"
- *                  format: int64
- *                  default: 8000
+ *                  default: 8000a
+ *              name:
+ *                  type: string
+ *                  description: "Название машины"
+ *                  default: "lada granta"
  *              title:
  *                  type: string
  *                  description: "Тип грузоперевозки: human - пассажирский, cargo - грузовой, all - грузопассажирский"
@@ -174,10 +196,14 @@ export type CarTimetableType = {
  *                  type: float
  *                  description: "Текущее количество груза в машине"
  *                  default: 0.0
- *              location:
+ *              latitude:
  *                  type: string
- *                  description: "Местоположение"
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  *      PatchCarTimetable:
  *          type: object
  *          required:
@@ -202,10 +228,13 @@ export type CarTimetableType = {
  *          type: object
  *          properties:
  *              numberOfTransport:
- *                  type: integer
+ *                  type: string
  *                  description: "Номер транспорта"
- *                  format: int64
- *                  default: 8000
+ *                  default: 8000a
+ *              name:
+ *                  type: string
+ *                  description: "Название машины"
+ *                  default: "lada granta"
  *              title:
  *                  type: string
  *                  description: "Тип грузоперевозки: human - пассажирский, cargo - грузовой, all - грузопассажирский"
@@ -232,18 +261,25 @@ export type CarTimetableType = {
  *                  type: float
  *                  description: "Текущее количество груза в машине (кг)"
  *                  default: 0.0
- *              location:
+ *              latitude:
  *                  type: string
- *                  description: "Местоположение"
- *                  default: Altai region, Barnaul, Lenin street
+ *                  description: "Широта"
+ *                  default: 0.0
+ *              longitude:
+ *                  type: string
+ *                  description: "Долгота"
+ *                  default: 0.0
  */
 @Entity()
 export default class Car {
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @Column('int')
-    numberOfTransport: number
+    @Column('text', {default: "8000a"})
+    numberOfTransport: string
+
+    @Column('text', {default: "lada granta"})
+    name: string
 
     @Column('text', {default: 'all'})
     title: CarTitleType
@@ -260,11 +296,11 @@ export default class Car {
     @Column('float', {default: 0})
     amountOfCargoInCar: number
 
-    @Column('text', {default: 'New-York'})
-    location: string
-    /**
-     * Возможно лучше под местоположение сделать табличку с полями: Регион, Город, Улица
-     */
+    @Column('text', {default: '0.0'})
+    latitude: string
+
+    @Column('text', {default: '0.0'})
+    longitude: string
 
     @Column('simple-array', {default: 'F'})
     timetable: CarStatusType[366]

@@ -24,7 +24,7 @@ export async function CreateVanger(data: TVanger) {
 
     let car: Car = await GetCarById(data.CarID);
     let driver: Driver = await GetDriverById(data.DriverID);
-    if (car.location != driver.location) {
+    if ((car.latitude != driver.latitude) || (car.longitude != driver.longitude)) {
         return "";
     }
 
@@ -124,17 +124,31 @@ export async function DeleteVanger(id: string) {
 }
 
 export async function GetVangersByDriverIdAndTimeInterval(driverId: string, time: TimeType, page: number, pageSize: number) {
-    const vangers: Vanger[] = await AppDataSource.getRepository(Vanger).find({
-        where: {
-            driver: {
-                id: driverId
+    let vangers: Vanger[];
+    if (!time.timeBegin && !time.timeEnd) {
+        console.log("here");
+        vangers = await AppDataSource.getRepository(Vanger).find({
+            where: {
+                driver: {
+                    id: driverId
+                }
             },
-            timeEnd: MoreThanOrEqual(time.timeBegin),
-            timeBegin: LessThanOrEqual(time.timeEnd)
-        },
-        take: pageSize,
-        skip: page * pageSize,
-    })
+            take: pageSize,
+            skip: page * pageSize,
+        })
+    } else {
+        vangers = await AppDataSource.getRepository(Vanger).find({
+            where: {
+                driver: {
+                    id: driverId
+                },
+                timeEnd: MoreThanOrEqual(time.timeBegin),
+                timeBegin: LessThanOrEqual(time.timeEnd)
+            },
+            take: pageSize,
+            skip: page * pageSize,
+        })
+    }
 
     return vangers;
 }

@@ -43,6 +43,9 @@ export async function PatchCarTimetable(id: string, data: CarTimetableType) {
     }
 
     const timeInDays = UnixtimeToDays(data.endDate, data.beginDate);
+    if (timeInDays.begin >= 366 || timeInDays.end >= 366) {
+        throw Error("Time begin or time end is too long");
+    }
 
     let carTimetable = Array.from(car.timetable);
     for (let i: number = timeInDays.begin - 1; i < timeInDays.end; ++i) {
@@ -63,7 +66,8 @@ export async function GetCarsByParams(data: TCar, page: number, pageSize: number
             maxAmountOfCargoInCar: MoreThanOrEqual(data.maxAmountOfCargoInCar),
             numberOfPassengersInCar: data.numberOfPassengersInCar,
             amountOfCargoInCar: data.amountOfCargoInCar,
-            location: data.location
+            latitude: data.latitude,
+            longitude: data.longitude
         },
         take: pageSize,
         skip: page * pageSize,

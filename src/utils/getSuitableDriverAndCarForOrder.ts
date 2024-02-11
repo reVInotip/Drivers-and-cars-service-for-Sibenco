@@ -11,12 +11,14 @@ export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificatio
         maxAmountOfCargoInCar: MoreThanOrEqual(order.maxAmountOfCargo),
         numberOfPassengersInCar: 0,
         amountOfCargoInCar: 0.0,
-        location: order.location,
+        latitude: order.latitude,
+        longitude: order.longitude,
         title: order.title
     });
 
     let drivers = await AppDataSource.getRepository(Driver).findBy({
-        location: order.location
+        latitude: order.latitude,
+        longitude: order.longitude
     })
 
     let driversForOrder: Driver[] = [];

@@ -61,13 +61,14 @@ export async function PatchDriverTimetable(id: string, data: DriverTimetableType
 export async function GetDriversByParams(data: TDriver, page: number, pageSize: number) {
     return await AppDataSource.getRepository(Driver).find({
         where: {
-            firstName: data.firstName,
-            lastName: data.lastName,
+            name: data.name,
             category: data.category,
-            location: data.location
+            latitude: data.latitude,
+            longitude: data.longitude,
+            phoneNumber: data.phoneNumber,
+            mail: data.mail
         },
         take: pageSize,
         skip: page * pageSize
     });
 }
-
