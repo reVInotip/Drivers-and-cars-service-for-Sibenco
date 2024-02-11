@@ -196,7 +196,7 @@ router.post('/:id/by_car', vangerController.GetVangersByCarIdAndTimeInterval);
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#components/schemas/GetSuitableCarsAndDriversByParams'
+ *                      $ref: '#components/schemas/GetSuitableVangerByParams'
  *      responses:
  *          200:
  *              description: "Списки всех подходящих под заказ водителей и машин"
@@ -221,7 +221,7 @@ router.post('/suitable/drivers_and_cars', vangerController.GetSuitableDriversAnd
  *          content:
  *              application/json:
  *                  schema:
- *                      $ref: '#components/schemas/GetSuitableCarsAndDriversByParams'
+ *                      $ref: '#components/schemas/GetSuitableVangerByParams'
  *      responses:
  *          200:
  *              description: "Список всех подходящих под заказ вангеров"

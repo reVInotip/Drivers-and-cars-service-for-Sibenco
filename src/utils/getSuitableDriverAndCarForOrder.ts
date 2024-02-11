@@ -1,5 +1,5 @@
 import { AppDataSource } from "../data-source";
-import { MoreThanOrEqual } from "typeorm";
+import { MoreThanOrEqual, Between } from "typeorm";
 import Car from "../entity/car";
 import Driver from "../entity/driver";
 import { config } from "../config";
@@ -11,14 +11,14 @@ export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificatio
         maxAmountOfCargoInCar: MoreThanOrEqual(order.maxAmountOfCargo),
         numberOfPassengersInCar: 0,
         amountOfCargoInCar: 0.0,
-        latitude: order.latitude,
-        longitude: order.longitude,
+        latitude: Between(order.locationBorders.latitude.min, order.locationBorders.latitude.max),
+        longitude: Between(order.locationBorders.longitude.min, order.locationBorders.longitude.max),
         title: order.title
     });
 
     let drivers = await AppDataSource.getRepository(Driver).findBy({
-        latitude: order.latitude,
-        longitude: order.longitude
+        latitude: Between(order.locationBorders.latitude.min, order.locationBorders.latitude.max),
+        longitude: Between(order.locationBorders.longitude.min, order.locationBorders.longitude.max),
     })
 
     let driversForOrder: Driver[] = [];
