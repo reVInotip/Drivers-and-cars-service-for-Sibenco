@@ -1,5 +1,5 @@
 import { AppDataSource } from "../data-source";
-import { MoreThanOrEqual, Between } from "typeorm";
+import { MoreThanOrEqual, Between, In } from "typeorm";
 import Car from "../entity/car";
 import Driver from "../entity/driver";
 import { config } from "../config";
@@ -13,7 +13,7 @@ export async function GetSuitableDriversAndCarsForOrder(order: OrderSpecificatio
         amountOfCargoInCar: 0.0,
         latitude: Between(order.locationBorders.latitude.min, order.locationBorders.latitude.max),
         longitude: Between(order.locationBorders.longitude.min, order.locationBorders.longitude.max),
-        title: order.title
+        title: In([order.title, 'all'])
     });
 
     let drivers = await AppDataSource.getRepository(Driver).findBy({
