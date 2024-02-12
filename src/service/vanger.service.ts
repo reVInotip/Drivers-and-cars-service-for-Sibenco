@@ -26,9 +26,10 @@ export async function CreateVanger(data: TVanger) {
     let car: Car = await GetCarById(data.CarID);
     let driver: Driver = await GetDriverById(data.DriverID);
     if (
-        (InBorders(car.latitude, data.locationBorders.latitude) && InBorders(car.longitude, data.locationBorders.longitude)) &&
-        (InBorders(driver.latitude, data.locationBorders.latitude) && InBorders(driver.longitude, data.locationBorders.longitude))
+        (!InBorders(car.latitude, data.locationBorders.latitude) || !InBorders(car.longitude, data.locationBorders.longitude)) ||
+        (!InBorders(driver.latitude, data.locationBorders.latitude) || !InBorders(driver.longitude, data.locationBorders.longitude))
     ) {
+        console.log("here");
         return "";
     }
 
@@ -96,9 +97,31 @@ export async function GetSuitableDriversAndCars(order: OrderSpecificationType, p
     order.endDate = timeInDays.end;
 
     let carsAndDrivers = await GetSuitableDriversAndCarsForOrder(order, false);
+
+    if (!carsAndDrivers.cars || !carsAndDrivers.drivers) {
+        return {cars: [], drivers: []};
+    }
+
+    const startIndex: number = page * pageSize;
+    const endIndex: number = page * pageSize + pageSize;
+    let cars: Car[];
+    let drivers: Driver[];
+
+    if (startIndex >= carsAndDrivers.cars.length) {
+        cars = []
+    } else {
+        cars = carsAndDrivers.cars.slice(page * pageSize, page * pageSize + pageSize);
+    }
+
+    if (startIndex >= carsAndDrivers.drivers.length) {
+        drivers = []
+    } else {
+        drivers = carsAndDrivers.drivers.slice(page * pageSize, page * pageSize + pageSize);
+    }
+
     return {
-        cars: carsAndDrivers.cars.slice(page * pageSize - 1, page * pageSize + pageSize),
-        drivers: carsAndDrivers.drivers.slice(page * pageSize - 1, page * pageSize + pageSize)
+        cars: cars,
+        drivers: drivers
     };
 }
 
