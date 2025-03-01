@@ -3,13 +3,15 @@ import cors from 'cors';
 import morgan from 'morgan';
 import http from 'http';
 
-import { AppDataSource } from "./data-source";
 import { config, LoadConfig } from './config';
+
+LoadConfig()
+
+import { AppDataSource } from "./data-source";
 import carRouter from './routes/car.router';
 import driverRouter from './routes/driver.router';
 import vangerRouter from './routes/vanger.router';
 import swaggerDocs from './utils/swagger';
-LoadConfig()
 
 
 AppDataSource.initialize().then(async () => {

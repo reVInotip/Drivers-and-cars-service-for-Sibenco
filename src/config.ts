@@ -16,5 +16,5 @@ export const config: IConfig = {
 }
 
 export function LoadConfig() {
-    config.port = process.env.PORT ? Number(process.env.PORT) : 8080;
+    config.port = process.env.PORT ? Number(process.env.PORT) : 8008;
 }
